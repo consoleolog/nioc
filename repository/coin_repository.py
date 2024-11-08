@@ -12,6 +12,7 @@ class CoinRepository(DataRepository):
         self.db.execute("""
         create table if not exists coin_data(
             id integer primary key autoincrement ,
+            interval varchar(10) not null,
             date timestamp not null,
             ticker varchar(10) not null ,
             stage integer not null ,
@@ -28,6 +29,7 @@ class CoinRepository(DataRepository):
     def select_by_ticker(self, ticker):
         self.db.execute("""
         select c.id,
+               c.interval,
                c.date, 
                c.ticker,
                c.stage,
@@ -43,9 +45,10 @@ class CoinRepository(DataRepository):
         return self.db.fetchall()
 
 
-    def insert(self, ticker, stage, close, ema_short, ema_mid, ema_long, macd_up, macd_mid, macd_low):
+    def insert(self, interval, ticker, stage, close, ema_short, ema_mid, ema_long, macd_up, macd_mid, macd_low):
         self.db.execute("""
         insert into coin_data(
+            interval,
             date,
             ticker,
             stage,
@@ -56,7 +59,7 @@ class CoinRepository(DataRepository):
             macd_up,
             macd_mid,
             macd_low
-        ) values (CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (ticker, stage, close, ema_short, ema_mid, ema_long, macd_up, macd_mid, macd_low))
+        ) values (CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (interval, ticker, stage, close, ema_short, ema_mid, ema_long, macd_up, macd_mid, macd_low))
         self.connection.commit()
 
