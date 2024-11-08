@@ -40,8 +40,26 @@ class CoinRepository(DataRepository):
                c.macd_up,
                c.macd_mid,
                c.macd_low
-         from coin_data c where c.ticker=? order by c.id limit 10;
+         from coin_data c where c.ticker=? order by c.id desc limit 10;
         """, (ticker,))
+        return self.db.fetchall()
+
+    def select_by_ticker_and_interval(self, ticker, interval):
+        self.db.execute("""
+        select c.id,
+               c.interval,
+               c.date, 
+               c.ticker,
+               c.stage,
+               c.close,
+               c.ema_short,
+               c.ema_mid,
+               c.ema_long,
+               c.macd_up,
+               c.macd_mid,
+               c.macd_low
+         from coin_data c where c.ticker=? and c.interval=? order by c.id desc limit 10;
+        """, (ticker, interval))
         return self.db.fetchall()
 
 
@@ -59,7 +77,7 @@ class CoinRepository(DataRepository):
             macd_up,
             macd_mid,
             macd_low
-        ) values (CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) values (?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (interval, ticker, stage, close, ema_short, ema_mid, ema_long, macd_up, macd_mid, macd_low))
         self.connection.commit()
 
